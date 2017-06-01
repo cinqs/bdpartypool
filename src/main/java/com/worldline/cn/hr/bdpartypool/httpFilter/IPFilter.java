@@ -20,15 +20,14 @@ import com.worldline.cn.hr.bdpartypool.auth.IPChecker;
 import com.worldline.cn.hr.bdpartypool.utils.IPUtils;
 
 @WebFilter("/*")
-public class FunctionFilter implements Filter {
-	private Logger logger = Logger.getLogger(FunctionFilter.class);
+public class IPFilter implements Filter {
+	private Logger logger = Logger.getLogger(IPFilter.class);
 	
 	private @Autowired IPChecker ipChecker;
 
 	@Override
 	public void destroy() {
 		logger.info("Function filter is being destroyed");
-		
 	}
 
 	@Override
