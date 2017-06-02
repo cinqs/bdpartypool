@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.worldline.cn.hr.bdpartypool.dao.Configuration;
 
@@ -15,6 +16,9 @@ public interface ConfigurationMapper extends Mapper {
 	final String SELECT_ALL = "SELECT * FROM CONFIGURATIONS";
 	final String SELECT_BY_NAME = "SELECT * FROM CONFIGURATIONS "
 			+ "WHERE NAME='${name}'";
+	final String UPDATE_BY_NAME = "UPDATE CONFIGURATIONS "
+			+ "SET PROPERTY='${property}' "
+			+ "WHERE NAME='${name}'";
 	
 	@Insert(INSERT_ONE)
 	void insertOne(Configuration c);
@@ -24,4 +28,7 @@ public interface ConfigurationMapper extends Mapper {
 	
 	@Select(SELECT_BY_NAME)
 	Configuration selectByName(Configuration c);
+	
+	@Update(UPDATE_BY_NAME)
+	int updateByName(Configuration c);
 }

@@ -1,7 +1,9 @@
 angular.module("mainApp", ['ngSanitize'])
 	.controller("mainCtrl", function($scope, $http) {
 
-
+		$scope.round = "unknown";
+		
+		
 
     $scope.fetchList = function() {
     	$http({
@@ -19,8 +21,24 @@ angular.module("mainApp", ['ngSanitize'])
 	      	$scope.errorMsg = response.data;
 	    })
     }
+    
+    $scope.updateRound = function() {
+    	$http({
+    		method: 'GET',
+    		url: '/api/configuration/round'
+    	}).then(function(res){
+    		if(res.status == 200) {
+    			$scope.round = res.data.value;
+    		}
+    	}, function(res){})
+    }
+    
+    $scope.updateInfo = function() {
+		$scope.fetchList();
+		$scope.updateRound();
+	}
 
-    $scope.fetchList();
+    $scope.updateInfo();
 
     $scope.voteFor = function(element) {
       console.log("clicked");

@@ -23,7 +23,7 @@
 					<div class="alert alert-warning" role="alert" ng-if="vote.warning">{{vote.warning}}</div>
 					<div class="alert alert-danger" role="alert" ng-if="vote.danger">{{vote.danger}}</div>
 					<br>
-					<h3>Items voted:</h3>
+					<h3>Items voted (Round {{round}}) :</h3>
 					<ul class="list-group">
 						<li ng-repeat="item in items | orderBy: '-count'" class="list-group-item">
 							{{item.name}}
