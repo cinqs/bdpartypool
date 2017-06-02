@@ -13,6 +13,13 @@ public class IPChecker {
 	
 	public boolean checkIP(String ip) {
 		logger.debug("going to check ip matching with: " + ipBind + " vs " + ip);
-		return ip.startsWith(ipBind);
+		String[] binds = ipBind.split(",");
+		
+		for(String bind : binds) {
+			if(ip.startsWith(bind))
+				return true;
+		}
+		
+		return false;
 	}
 }

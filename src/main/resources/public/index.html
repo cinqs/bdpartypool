@@ -1,16 +1,59 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<script type="text/javascript" src="/webjars/requirejs/require.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"></link>
-<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
-<script type="text/javascript" src="/webjars/angularjs/angular-sanitize.min.js"></script>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8">
+		<title>...</title>
+		<script type="text/javascript" src="/webjars/requirejs/require.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"></link>
+		<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+		<script type="text/javascript" src="/webjars/angularjs/angular-sanitize.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/css/style.css"></link>
+		<script type="text/javascript" src="/javascripts/main.js"></script>
+		<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/css/font-awesome.min.css"></link>
+	</head>
+	<body  ng-app="mainApp">
+		<div class="container main" ng-controller="mainCtrl">
+			<div class="row">
+				<div class="col-md-6">
+					<br>
+					<div class="alert alert-success" role="alert" ng-if="vote.success">{{vote.success}}</div>
+					<div class="alert alert-info" role="alert" ng-if="votet.info">{{vote.info}}</div>
+					<div class="alert alert-warning" role="alert" ng-if="vote.warning">{{vote.warning}}</div>
+					<div class="alert alert-danger" role="alert" ng-if="vote.danger">{{vote.danger}}</div>
+					<br>
+					<h3>Items voted:</h3>
+					<ul class="list-group">
+						<li ng-repeat="item in items | orderBy: '-count'" class="list-group-item">
+							{{item.name}}
 
-</body>
+							<span class="badge" ng-click="voteFor($event)" data-item-id="{{item.id}}">
+								<i class="fa fa-thumbs-up" aria-hidden="true"></i>
+								{{item.count}}
+							</span>
+						</li>
+					</ul>
+				</div>
+				<div class="col-md-6">
+					<h3>Propose a new Item</h3>
+					<label>Name</label>
+					<div class="form-group">
+					  <input type="text" class="form-control" ng-model="item.name">
+					</div>
+					<br>
+					<label>Description</label>
+					<div class="form-group">
+					  	<textarea class="form-control" ng-model="item.desc"></textarea>
+					</div>
+					<br>
+					<div class="form-group">
+						<div class="alert alert-info" role="alert" ng-if="submit.info">{{submit.info}}</div>
+						<div class="alert alert-warning" role="alert" ng-if="submit.warning">{{submit.warning}}</div>
+					  <button type="button" class="btn btn-default" ng-click="propose()">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

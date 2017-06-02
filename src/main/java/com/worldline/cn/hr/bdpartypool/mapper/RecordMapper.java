@@ -14,7 +14,7 @@ public interface RecordMapper extends Mapper {
 			+ "(NULL, ${voteFor}, ${voteBy}, ${voteRound})";
 	
 	final String SELECT_BY_ITEM = "SELECT * FROM RECORDS WHERE"
-			+ "VOTEFOR='${voteFor}' and VOTEROUND='${voteRound}'";
+			+ " VOTEFOR='${voteFor}' and VOTEROUND='${voteRound}'";
 	
 	final String SELECT_BY_VOTER = "SELECT * FROM RECORDS WHERE"
 			+ " VOTEBY=${voteBy} and VOTEROUND=${voteRound}";

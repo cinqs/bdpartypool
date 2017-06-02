@@ -36,8 +36,10 @@ public class VoterFilter implements Filter{
 		
 		int round = BdPartyPoolApplication.getRound();
 		
-		if(round == 0) {
-			res.getWriter().write("vote pool is closed...wait patiently...");
+		if(round == 0 || !BdPartyPoolApplication.voteRunning()) {
+			res.setStatus(503);
+			res.getWriter().write("vote pool is closed..."
+					+ "wait patiently...");
 		} else {
 			chain.doFilter(req, res);
 		}

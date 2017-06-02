@@ -1,7 +1,9 @@
 package com.worldline.cn.hr.bdpartypool.restController;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import com.worldline.cn.hr.bdpartypool.dao.Voter;
 import com.worldline.cn.hr.bdpartypool.mapper.ItemMapper;
 import com.worldline.cn.hr.bdpartypool.mapper.RecordMapper;
 import com.worldline.cn.hr.bdpartypool.mapper.VoterMapper;
+import com.worldline.cn.hr.bdpartypool.services.ItemService;
 import com.worldline.cn.hr.bdpartypool.utils.IPUtils;
 
 @RestController
@@ -32,11 +35,14 @@ public class VoteController {
 	private Logger logger = Logger.getLogger(VoteController.class);
 	private @Autowired SqlSessionFactory ssf;
 	private @Value("${pool.ticket.max}") int ticketMax;
+	
+	private @Autowired ItemService is;
 
 	@RequestMapping(value="/")
-	public String vote(HttpServletRequest req,
+	public Map<String, String> vote(HttpServletRequest req,
 			@RequestParam(value="id") int id,
 			HttpServletResponse res) throws IOException {
+		Map<String, String> map = new HashMap<>();
 		String ip = IPUtils.getIPAddr(req);
 		int voterID = checkIP(ip);
 		int round = BdPartyPoolApplication.getRound();
@@ -54,8 +60,8 @@ public class VoteController {
 		List<Record> records = rm.getByVoter(record);
 		
 		if(records.size() >= ticketMax) {
-			//res.getWriter().write("no more tickets available...");
-			return "you have reached the maximum tickets limit...";
+			map.put("status", "warning");
+			map.put("msg", "you have reached the maximum tickets limit...");
 		} else {
 			record.setVoteBy(voterID);
 			record.setVoteFor(id);
@@ -65,46 +71,19 @@ public class VoteController {
 				rm.insertOne(record);
 			} catch (Exception e) {
 				logger.warn(e);
-				return "There is an error while recording your voting...try later please";
+				map.put("status", "danger");
+				map.put("msg", "There is an error while recording your voting...try later please");
+				return map;
 			}
 			
-			return "Thanks for your voting...";
+			map.put("status", "success");
+			map.put("msg", "Thanks for your voting...");
 		}
-	}
-	
-	@RequestMapping(value="/propose", method=RequestMethod.GET)
-	public String propose(HttpServletRequest req,
-			@RequestParam(value="name") String name) {
-		String ip = IPUtils.getIPAddr(req);
-		logger.debug("received proposal from " + ip + " for " + name);
 		
-		if(checkItemExists(name)) {
-			return "this item is already registered, and can be voted...";
-		} else {
-			return "item been registered, thank you for your proposal";
-		}
+		return map;
 	}
 	
-	private boolean checkItemExists(String name) {
-		if(null == name || name.isEmpty()) {
-			throw new IllegalArgumentException("item name can't be null");
-		} else {
-			SqlSession ss = ssf.openSession(true);
-			ItemMapper im = ss.getMapper(ItemMapper.class);
-			
-			Item item = new Item();
-			item.setName(name);
-			
-			if(null == im.getByName(item)) {
-				im.insertOne(item);
-				ss.close();
-				return false;
-			} else {
-				ss.close();
-				return true;
-			}
-		}
-	}
+	
 
 	private int checkIP(String ip) {
 		SqlSession ss = ssf.openSession(true);
