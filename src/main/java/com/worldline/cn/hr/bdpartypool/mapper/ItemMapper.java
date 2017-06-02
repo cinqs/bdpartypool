@@ -16,6 +16,9 @@ public interface ItemMapper extends Mapper {
 	
 	final String GET_BY_ID = "SELECT * FROM ITEMS WHERE ID='${id}'";
 	
+	final String GET_BY_NAME = "SELECT * FROM ITEMS WHERE "
+			+ "NAME='${name}'";
+	
 	@Insert(INSERT_ONE)
 	void insertOne(Item item);
 	
@@ -24,4 +27,7 @@ public interface ItemMapper extends Mapper {
 	
 	@Select(GET_BY_ID)
 	Item getByID(Item item);
+	
+	@Select(GET_BY_NAME)
+	Item getByName(Item item);
 }

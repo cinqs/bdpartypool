@@ -1,8 +1,6 @@
 package com.worldline.cn.hr.bdpartypool.restController;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.worldline.cn.hr.bdpartypool.BdPartyPoolApplication;
+import com.worldline.cn.hr.bdpartypool.dao.Item;
 import com.worldline.cn.hr.bdpartypool.dao.Record;
 import com.worldline.cn.hr.bdpartypool.dao.Voter;
+import com.worldline.cn.hr.bdpartypool.mapper.ItemMapper;
 import com.worldline.cn.hr.bdpartypool.mapper.RecordMapper;
 import com.worldline.cn.hr.bdpartypool.mapper.VoterMapper;
 import com.worldline.cn.hr.bdpartypool.utils.IPUtils;
@@ -34,7 +34,7 @@ public class VoteController {
 	private @Value("${pool.ticket.max}") int ticketMax;
 
 	@RequestMapping(value="/")
-	public boolean vote(HttpServletRequest req,
+	public String vote(HttpServletRequest req,
 			@RequestParam(value="id") int id,
 			HttpServletResponse res) throws IOException {
 		String ip = IPUtils.getIPAddr(req);
@@ -47,7 +47,6 @@ public class VoteController {
 		SqlSession ss = ssf.openSession(true);
 		
 		RecordMapper rm = ss.getMapper(RecordMapper.class);
-		VoterMapper vm = ss.getMapper(VoterMapper.class);
 		
 		Record record = new Record();
 		record.setVoteRound(round);
@@ -55,10 +54,9 @@ public class VoteController {
 		List<Record> records = rm.getByVoter(record);
 		
 		if(records.size() >= ticketMax) {
-			res.getWriter().write("no more tickets available...");
-			return false;
+			//res.getWriter().write("no more tickets available...");
+			return "you have reached the maximum tickets limit...";
 		} else {
-			record.setRecordAt(new Timestamp(new Date().getTime()));
 			record.setVoteBy(voterID);
 			record.setVoteFor(id);
 			record.setVoteRound(round);
@@ -67,22 +65,47 @@ public class VoteController {
 				rm.insertOne(record);
 			} catch (Exception e) {
 				logger.warn(e);
-				return false;
+				return "There is an error while recording your voting...try later please";
 			}
 			
-			return true;
+			return "Thanks for your voting...";
 		}
 	}
 	
 	@RequestMapping(value="/propose", method=RequestMethod.GET)
-	public boolean propose(HttpServletRequest req,
+	public String propose(HttpServletRequest req,
 			@RequestParam(value="name") String name) {
 		String ip = IPUtils.getIPAddr(req);
 		logger.debug("received proposal from " + ip + " for " + name);
 		
-		return true;
+		if(checkItemExists(name)) {
+			return "this item is already registered, and can be voted...";
+		} else {
+			return "item been registered, thank you for your proposal";
+		}
 	}
 	
+	private boolean checkItemExists(String name) {
+		if(null == name || name.isEmpty()) {
+			throw new IllegalArgumentException("item name can't be null");
+		} else {
+			SqlSession ss = ssf.openSession(true);
+			ItemMapper im = ss.getMapper(ItemMapper.class);
+			
+			Item item = new Item();
+			item.setName(name);
+			
+			if(null == im.getByName(item)) {
+				im.insertOne(item);
+				ss.close();
+				return false;
+			} else {
+				ss.close();
+				return true;
+			}
+		}
+	}
+
 	private int checkIP(String ip) {
 		SqlSession ss = ssf.openSession(true);
 		VoterMapper vm = ss.getMapper(VoterMapper.class);
@@ -94,6 +117,7 @@ public class VoteController {
 		}
 		
 		voter = vm.selectByIp(voter);
+		ss.close();
 		return voter.getId();
 	}
 }

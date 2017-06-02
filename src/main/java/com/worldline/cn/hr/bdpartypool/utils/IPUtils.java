@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 public class IPUtils {
 	
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(IPUtils.class);
 
 	private IPUtils() {

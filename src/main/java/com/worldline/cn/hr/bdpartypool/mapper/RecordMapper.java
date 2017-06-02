@@ -11,7 +11,7 @@ public interface RecordMapper extends Mapper {
 
 	final String INSERT_ONE = "INSERT INTO RECORDS "
 			+ "(RECORDAT, VOTEFOR, VOTEBY, VOTEROUND) VALUES "
-			+ "(${recordAt}, ${voteFor}, ${voteBy}, ${voteRound})";
+			+ "(NULL, ${voteFor}, ${voteBy}, ${voteRound})";
 	
 	final String SELECT_BY_ITEM = "SELECT * FROM RECORDS WHERE"
 			+ "VOTEFOR='${voteFor}' and VOTEROUND='${voteRound}'";
